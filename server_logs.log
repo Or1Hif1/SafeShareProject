@@ -659,3 +659,34 @@
 2025-05-21 02:48:10,325 - ERROR - Decryption error with client ('127.0.0.1', 61103): [WinError 10054] An existing connection was forcibly closed by the remote host
 2025-05-21 02:48:10,325 - ERROR - Error with client ('127.0.0.1', 61103): [WinError 10054] An existing connection was forcibly closed by the remote host
 2025-05-21 02:48:10,325 - INFO - Closed connection with ('127.0.0.1', 61103)
+2025-06-10 20:17:21,704 - INFO - Server listening on 127.0.0.1:65432...
+2025-06-10 20:17:21,705 - INFO - Server is running...
+2025-06-10 20:17:28,013 - INFO - Connection established with ('127.0.0.1', 51402)
+2025-06-10 20:17:38,404 - ERROR - Decryption error with client ('127.0.0.1', 51402): Ciphertext length must be equal to key size.
+2025-06-10 20:17:38,404 - ERROR - Error with client ('127.0.0.1', 51402): Expecting value: line 1 column 1 (char 0)
+2025-06-10 20:17:38,404 - INFO - Closed connection with ('127.0.0.1', 51402)
+2025-06-10 20:44:10,507 - INFO - Server listening on 127.0.0.1:65432...
+2025-06-10 20:44:10,507 - INFO - Server is running...
+2025-06-10 20:44:18,674 - INFO - Connection established with ('127.0.0.1', 52094)
+2025-06-10 20:44:26,583 - INFO - Action received: login
+2025-06-10 20:44:26,583 - INFO - Login attempt for ori
+2025-06-10 20:44:26,637 - INFO - Action received: sendAllGroups
+2025-06-10 20:44:30,620 - INFO - Action received: verifyGroupPassword
+2025-06-10 20:44:30,620 - INFO - Verifying password for group: ori
+2025-06-10 20:44:31,662 - INFO - Action received: sendAllGroups
+2025-06-10 20:44:38,123 - INFO - Action received: sendAllGroups
+2025-06-10 20:44:43,129 - INFO - Action received: sendAllGroups
+2025-06-10 20:44:48,140 - INFO - Action received: sendAllGroups
+2025-06-10 20:44:53,145 - INFO - Action received: sendAllGroups
+2025-06-10 20:44:58,159 - INFO - Action received: sendAllGroups
+2025-06-10 20:45:03,174 - INFO - Action received: sendAllGroups
+2025-06-10 20:45:08,191 - INFO - Action received: sendAllGroups
+2025-06-10 20:45:13,197 - INFO - Action received: sendAllGroups
+2025-06-10 20:45:18,203 - INFO - Action received: sendAllGroups
+2025-06-10 20:45:23,216 - INFO - Action received: sendAllGroups
+2025-06-10 20:45:28,223 - INFO - Action received: sendAllGroups
+2025-06-10 20:45:33,238 - INFO - Action received: sendAllGroups
+2025-06-10 20:45:38,252 - INFO - Action received: sendAllGroups
+2025-06-10 20:45:44,819 - ERROR - Decryption error with client ('127.0.0.1', 52094): [WinError 10054] An existing connection was forcibly closed by the remote host
+2025-06-10 20:45:44,819 - ERROR - Error with client ('127.0.0.1', 52094): [WinError 10054] An existing connection was forcibly closed by the remote host
+2025-06-10 20:45:44,820 - INFO - Closed connection with ('127.0.0.1', 52094)

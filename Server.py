@@ -12,9 +12,8 @@ import random
 from JsonDataBase import JsonDataBase
 import logging
 
-
 class Server:
-    def __init__(self, host='127.0.0.1', port=65432, udp_port=12345, save_dir="Groups"):
+    def __init__(self, host='127.0.0.1', port=65432, save_dir="Groups"):
         """
         Initialize the Server, generate keys, and start the server socket.
         """
@@ -25,7 +24,6 @@ class Server:
         # Set host and ports for the server
         self.host = host
         self.port = port
-        self.udp_port = udp_port
         self.players = []
 
         # Generate RSA keys (private and public) for encryption/decryption
