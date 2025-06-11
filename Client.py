@@ -11,7 +11,7 @@ from ftplib import FTP
 
 
 class Client:
-    def __init__(self, server_host='127.0.0.1', tcp_port=65432):
+    def __init__(self, server_host='10.100.102.65', tcp_port=65432):
         """
         Initialize the Client by generating keys, connecting to the server,
         and starting the application engine.
@@ -142,8 +142,9 @@ class Client:
             print(f"Sending file: {filename} ({filesize} bytes)")
 
             # Connect to the FTP server
-            ftp = FTP(self.server_host)
-            ftp.login()  # Assuming anonymous login or modify for user authentication
+            ftp = FTP()
+            ftp.connect(host="10.100.102.65", port=21)
+            ftp.login(user="user", passwd="12345")
 
             # Change to the target directory (optional, based on your setup)
             # ftp.cwd('/target/directory')
@@ -255,33 +256,40 @@ class Client:
     def receive_all_files(self, group_name):
         """
         Receive all files for a specific group from the FTP server.
+        Save them under ClientFiles/<GroupName>/.
         """
         try:
             print(f"Requesting files for group: {group_name}")
 
             # Connect to the FTP server
-            ftp = FTP(self.server_host)
-            ftp.login()  # Assuming anonymous login or modify for user authentication
+            ftp = FTP()
+            ftp.connect(self.server_host, 21)
+            ftp.login(user="user", passwd="12345")
+            ftp.set_pasv(True)
 
-            # List files in the target directory (optional, modify based on your setup)
-            files = ftp.nlst()  # List file names in the FTP server's current directory
+            # List files
+            files = ftp.nlst()
             print(f"Found {len(files)} files on server.")
 
-            if len(files) == 0:
+            if not files:
                 print("No files found.")
                 ftp.quit()
                 return
 
+            # Create target directory: ClientFiles/<GroupName>/
+            save_dir = os.path.join(self.save_dir, group_name)
+            os.makedirs(save_dir, exist_ok=True)
+
             for filename in files:
                 print(f"Receiving file: {filename}")
+                file_path = os.path.join(save_dir, filename)
 
-                # Open the local file for writing
-                with open(filename, "wb") as file:
+                # Save file to proper group directory
+                with open(file_path, "wb") as file:
                     ftp.retrbinary(f"RETR {filename}", file.write)
 
-                print(f"File {filename} received successfully!")
+                print(f"File {filename} saved to: {file_path}")
 
-            # Close FTP connection
             ftp.quit()
 
         except Exception as e:

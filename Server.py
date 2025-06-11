@@ -11,9 +11,55 @@ import json
 import random
 from JsonDataBase import JsonDataBase
 import logging
+from pyftpdlib.authorizers import DummyAuthorizer
+from pyftpdlib.handlers import FTPHandler
+from pyftpdlib.servers import FTPServer
 
+# -----------------------------
+# הגדרות לשרת ה־FTP
+# -----------------------------
+FTP_HOST = "0.0.0.0"   # מאזין לכל כתובת
+FTP_PORT = 21          # תואם ללקוח שלך
+FTP_USER = "user"
+FTP_PASS = "12345"
+FTP_ROOT = "Groups"    # כאן יישמרו הקבצים
+
+def start_ftp_server():
+    """
+    מפעיל שרת FTP לקבלת קבצים שנשלחים מהקליינט דרך ftplib.
+    """
+    os.makedirs(FTP_ROOT, exist_ok=True)
+
+    authorizer = DummyAuthorizer()
+    authorizer.add_user(FTP_USER, FTP_PASS, FTP_ROOT, perm="elradfmw")
+
+    handler = FTPHandler
+    handler.authorizer = authorizer
+
+    server = FTPServer((FTP_HOST, FTP_PORT), handler)
+    print(f"[✓] FTP Server running at ftp://{FTP_HOST}:{FTP_PORT}")
+    print(f"    Username: {FTP_USER}, Password: {FTP_PASS}, Save Path: '{FTP_ROOT}'")
+
+    server.serve_forever()
+
+
+# -----------------------------
+# כאן מתחילים את השרת הראשי
+# -----------------------------
+def start_main_server():
+    """
+    כאן תוכל להפעיל את שרת ה-TCP שלך או כל דבר אחר שאתה מריץ במקביל לשרת ה-FTP.
+    """
+    print("[*] Main server logic goes here...")
+    while True:
+        pass  # אפשר להחליף בלולאת שרת רגילה או לוגיקה שלך
+
+
+# -----------------------------
+# הפעלת שני השרתים במקביל
+# -----------------------------
 class Server:
-    def __init__(self, host='127.0.0.1', port=65432, save_dir="Groups"):
+    def __init__(self, host='10.100.102.65', port=65432, save_dir="Groups"):
         """
         Initialize the Server, generate keys, and start the server socket.
         """
@@ -217,75 +263,9 @@ class Server:
         else:
             client_socket.send(b"False")
 
-    def receive_file(self, data, client_socket):
-        """
-        Receive a file from the client and save it into a folder corresponding to the group name.
-        """
-        try:
-            filename = data.get('filename')
-            filesize = data.get('filesize')
-            group_name = data.get('group_name')
-
-            if not filename or not filesize or not group_name:
-                raise ValueError("Missing filename, filesize, or group name.")
-
-            self.logger.info(f"Receiving file: {filename} ({filesize} bytes) for group '{group_name}'")
-
-            group_folder_path = os.path.join(self.save_dir, group_name)
-            os.makedirs(group_folder_path, exist_ok=True)
-
-            save_path = os.path.join(group_folder_path, filename)
-
-            with open(save_path, "wb") as f:
-                bytes_received = 0
-                while bytes_received < filesize:
-                    chunk = client_socket.recv(4096)
-                    if not chunk:
-                        raise Exception("Connection lost during file transfer.")
-                    f.write(chunk)
-                    bytes_received += len(chunk)
-
-            self.logger.info(f"File '{filename}' received successfully and saved to {save_path}")
-
-        except Exception as e:
-            self.logger.error(f"Error receiving file: {e}")
-            if os.path.exists(save_path):
-                os.remove(save_path)
-
-    def send_all_files(self, group_name, client_socket):
-        """
-        Send all files from a specific group folder to the client.
-        """
-        try:
-            group_folder_path = os.path.join(self.save_dir, group_name)
-            if not os.path.exists(group_folder_path):
-                client_socket.send(b'0')
-                return
-
-            files = [f for f in os.listdir(group_folder_path) if os.path.isfile(os.path.join(group_folder_path, f))]
-            client_socket.send(str(len(files)).encode())
-
-            if files:
-                for filename in files:
-                    file_path = os.path.join(group_folder_path, filename)
-                    filesize = os.path.getsize(file_path)
-
-                    metadata = {"action": "sendFile", "filename": filename, "filesize": filesize, "group_name": group_name}
-                    metadata_json = json.dumps(metadata).encode()
-
-                    client_socket.sendall(len(metadata_json).to_bytes(4, 'big'))
-                    client_socket.sendall(metadata_json)
-
-                    with open(file_path, "rb") as file:
-                        while chunk := file.read(4096):
-                            client_socket.sendall(chunk)
-
-                self.logger.info(f"All files for group '{group_name}' sent successfully.")
-
-        except Exception as e:
-            self.logger.error(f"Error sending files: {e}")
-            client_socket.send(b'0')
 
 # Main entry point for the server
 if __name__ == "__main__":
+    ftp_thread = threading.Thread(target=start_ftp_server, daemon=True)
+    ftp_thread.start()
     server = Server()
